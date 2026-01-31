@@ -25,7 +25,7 @@
     </div>
     <div class="heroPageButtons">
       <a class="pageButton" href="#inperson">Appointment</a>
-      <a class="pageButton" href="#online">Online</a>
+      <a class="pageButton" href="fromhome.html">Online</a>
       <a class="pageButton" href="#pricing">Pricing</a>
     </div>
 
@@ -43,22 +43,14 @@
         <p>One clear card guiding you through both paths so you can pick the one that works for you.</p>
       </div>
       <div class="filingOptionsGrid">
-        <article id="inperson" class="filingOption">
-          <div class="filingOptionBadge">In-Person</div>
-          <p class="filingOptionLead">Book a visit, hand over documents, and we’ll walk you through every signature.</p>
-          <div class="filingOptionActions">
-            <a class="btn primary" href="GOOGLE_BOOKING_LINK_HERE" target="_blank" rel="noopener">Book In-Person</a>
-            <a class="btn ghost" href="sms:+14077343201?&body=IN-PERSON%20-%20I%20want%20to%20book.%20What%20locations%20or%20times%20do%20you%20have%3F">Text to book</a>
-          </div>
-        </article>
-        <article id="online" class="filingOption">
-          <div class="filingOptionBadge">Online</div>
-          <p class="filingOptionLead">Upload securely, answer fast questions, and we’ll file once you give the green light.</p>
-          <div class="filingOptionActions">
-            <a class="btn glow" href="https://www.dropbox.com/request/1QqNZXsbhPmc5N5lGhx8" target="_blank" rel="noopener">Start Secure Upload</a>
-            <a class="btn dark" href="sms:+14077343201?&body=ONLINE%20-%20I%20uploaded%20my%20docs.%20What%20else%20do%20you%20need%3F">Text “UPLOADED”</a>
-          </div>
-        </article>
+        <a id="inperson" class="filingOptionButton" href="GOOGLE_BOOKING_LINK_HERE" target="_blank" rel="noopener">
+          <span class="filingIcon" aria-hidden="true">👤</span>
+          <span>In Person</span>
+        </a>
+        <a id="fromhome" class="filingOptionButton" href="fromhome.html">
+          <span class="filingIcon" aria-hidden="true">🏡</span>
+          <span>From Home</span>
+        </a>
       </div>
     </section>
 
