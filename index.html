@@ -23,6 +23,40 @@
     <div class="heroLogoWrap">
       <img src="assets/eez-tax-logo.png" alt="EEZ Tax Orlando" class="heroLogo" />
     </div>
+  
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD0beRx1j0exYzACXuxHggpAnQInSqQ_1Q",
+      authDomain: "eztax-94f01.firebaseapp.com",
+      databaseURL: "https://eztax-94f01-default-rtdb.firebaseio.com",
+      projectId: "eztax-94f01",
+      storageBucket: "eztax-94f01.firebasestorage.app",
+      messagingSenderId: "353453106544",
+      appId: "1:353453106544:web:ac3735a7ba2fdc6c201bb5",
+      measurementId: "G-4ZDPSH3QM4"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const heroLoginLink = document.querySelector('.heroLoginRow a');
+
+    const labelForUser = (user) => {
+      if (!heroLoginLink) return;
+      heroLoginLink.href = 'profile.html';
+      if (!user) {
+        heroLoginLink.textContent = 'Log In';
+        return;
+      }
+      const displayName = user.displayName || user.email?.split('@')[0] || 'You';
+      heroLoginLink.textContent = `Hi, ${displayName}`;
+    };
+
+    onAuthStateChanged(auth, labelForUser);
+  </script>
     <div class="heroPageButtons">
       <a class="pageButton" href="#inperson">Appointment</a>
       <a class="pageButton" href="fromhome.html">Online</a>
@@ -38,10 +72,6 @@
 
   <main class="wrap">
     <section id="filing-options" class="section filingOptionsCard">
-      <div class="sectionHead">
-        <h2>Filing options</h2>
-        <p>One clear card guiding you through both paths so you can pick the one that works for you.</p>
-      </div>
       <div class="filingOptionsGrid">
         <a id="inperson" class="filingOptionButton" href="GOOGLE_BOOKING_LINK_HERE" target="_blank" rel="noopener">
           <span class="filingIcon" aria-hidden="true">👤</span>
@@ -69,7 +99,6 @@
     <section class="section">
       <div class="sectionHead">
         <h2>What to bring / upload</h2>
-        <p>Keep it simple. Start with these.</p>
       </div>
 
       <div class="listGrid">

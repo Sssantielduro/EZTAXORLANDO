@@ -110,6 +110,27 @@ h1{
   padding:16px;
   box-shadow: var(--shadow);
 }
+.sectionRow{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px,1fr));
+  gap:18px;
+  margin-top:18px;
+}
+.hidden{display:none !important}
+.filingOptionsCard{
+  border-radius:0;
+  padding:16px 18px;
+}
+.filingOptionsCard .sectionHead{margin-bottom:0; text-align:center;}
+#filing-options{
+  position:relative;
+  left:50%;
+  right:50%;
+  width:100vw;
+  margin-left:-50vw;
+  margin-right:-50vw;
+  border-radius:0;
+}
 .signupSection{
   background: transparent;
   border-color: transparent;
@@ -122,6 +143,66 @@ h1{
   gap:12px;
   margin-top:16px;
 }
+.needsForm{
+  display:grid;
+  gap:12px;
+  margin-top:16px;
+}
+.uploadSection .sectionHead p{
+  color:var(--muted);
+}
+.uploadZone{
+  border:1px dashed rgba(255,255,255,.3);
+  border-radius:18px;
+  padding:24px;
+  text-align:center;
+  background: rgba(255,255,255,.02);
+  transition: border-color .2s ease, background .2s ease;
+}
+.uploadZone.dragover{
+  border-color: rgba(58,167,255,.85);
+  background: rgba(58,167,255,.08);
+}
+.uploadHelp{margin:0;font-weight:600;}
+.uploadMeta{margin-top:8px;font-size:14px;color:var(--muted);}
+.uploadList{margin-top:12px;list-style:none;padding:0;display:grid;gap:6px;}
+.uploadList li{
+  padding:8px 12px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.15);
+  background: rgba(11,18,34,.55);
+  font-size:14px;
+}
+.uploadActions{
+  margin-top:14px;
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+}
+.uploadActions .tiny{margin-top:0; flex:1;}
+.needsForm label{
+  display:flex;
+  flex-direction:column;
+  font-weight:600;
+  letter-spacing:.2px;
+  font-size:13px;
+  color:rgba(238,242,255,.8);
+}
+.needsForm select,
+.needsForm textarea{
+  margin-top:6px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.25);
+  background: rgba(0,0,0,.3);
+  color:var(--text);
+  padding:10px 12px;
+  font-size:16px;
+  font-family:inherit;
+  min-height:48px;
+}
+.needsForm textarea{min-height:90px;}
 .nameRow{
   display:flex;
   gap:10px;
@@ -151,6 +232,23 @@ h1{
   min-height:60px;
   font-size:16px;
 }
+.needsGrid{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px,1fr));
+  gap:10px;
+}
+.checkboxCard{
+  border:1px solid rgba(255,255,255,.25);
+  border-radius:12px;
+  padding:10px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-weight:600;
+  background: rgba(255,255,255,.02);
+  cursor:pointer;
+}
+.checkboxCard input{margin:0;}
 .signupActions{
   display:flex;
   gap:10px;
@@ -171,7 +269,7 @@ h1{
 
 .filingOptionsCard .sectionHead h2{margin-bottom:4px}
 .filingOptionsGrid{
-  margin-top:24px;
+  margin:12px 0;
   display:grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap:18px;
@@ -302,6 +400,25 @@ li{margin:6px 0}
   padding: 8px 18px 22px;
   flex-wrap:wrap;
 }
+.timelineHeader{
+  display:flex;
+  justify-content:flex-start;
+  margin-top:-4px;
+  margin-bottom:6px;
+}
+.glassBack{
+  background: rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.18);
+  padding:6px 12px;
+  border-radius:999px;
+  font-weight:700;
+  letter-spacing:.2px;
+  box-shadow: var(--shadow);
+  color: #fff;
+}
+.glassBack:hover{
+  background: rgba(255,255,255,.12);
+}
 
 .timeline{
   margin:14px auto 0;
@@ -331,17 +448,46 @@ li{margin:6px 0}
   background:linear-gradient(135deg, rgba(58,167,255,.9), rgba(125,211,252,.6));
   border-color:rgba(58,167,255,.8);
 }
+.timelineStep.active{
+  position:relative;
+}
 .timelineLabel{
-  text-transform:uppercase;
-  letter-spacing:.5px;
-  font-size:13px;
-  color:var(--muted);
-  margin-bottom:4px;
+  letter-spacing:.2px;
+  font-size:20px;
+  font-weight:950;
+  color:var(--text);
+  margin:0 0 6px;
+}
+.timelineStep.active::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  bottom:-8px;
+  transform:translateX(-50%);
+  width:60%;
+  height:3px;
+  border-radius:99px;
+  background:linear-gradient(90deg, rgba(58,167,255,0), rgba(58,167,255,0.9), rgba(58,167,255,0));
+  animation:timelinePulse 1.4s linear infinite;
 }
 .timelineStep p{
   margin:0;
   font-size:13px;
   color:rgba(238,242,255,.8);
+}
+.timelineStep.active .timelineDot{
+  animation:dotPulse 1.4s ease infinite;
+}
+
+@keyframes timelinePulse{
+  0%{width:35%; opacity:.6;}
+  50%{width:80%; opacity:1;}
+  100%{width:35%; opacity:.6;}
+}
+
+@keyframes dotPulse{
+  0%,100%{transform: translateY(0);} 
+  50%{transform: translateY(-2px);} 
 }
 
 .pageButton{

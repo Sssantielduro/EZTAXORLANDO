@@ -17,17 +17,20 @@
     <div class="heroLogoWrap">
       <img src="assets/eez-tax-logo.png" alt="EEZ Tax Orlando" class="heroLogo" />
     </div>
-    <div class="heroMain">
+      <div class="heroMain">
       <h1>File from home</h1>
       <p class="sub">Upload documents virtually, and let the pros handle the rest.</p>
       <div class="heroPageButtons">
         <a class="pageButton" href="https://www.dropbox.com/request/1QqNZXsbhPmc5N5lGhx8" target="_blank" rel="noopener">Upload documents</a>
         <a class="pageButton" href="sms:+14077343201">Message us</a>
       </div>
+      <div class="timelineHeader">
+        <button class="glassBack" type="button">Back</button>
+      </div>
       <div class="timeline">
         <div class="timelineStep active">
           <div class="timelineDot">1</div>
-          <div class="timelineLabel">Log In</div>
+          <div class="timelineLabel">Info</div>
           <p>Let's see what you're working with.</p>
         </div>
         <div class="timelineStep">
@@ -37,7 +40,7 @@
         </div>
         <div class="timelineStep">
           <div class="timelineDot">3</div>
-          <div class="timelineLabel">Review</div>
+          <div class="timelineLabel">Done</div>
           <p>Approve the draft and we file it for you.</p>
         </div>
       </div>
@@ -45,11 +48,75 @@
   </header>
 
   <main class="wrap">
-    <section class="section signupSection">
+    <section id="uploadSection" class="section uploadSection hidden">
+      <div class="sectionHead">
+        <h2>Upload documents</h2>
+        <p>Drag and drop files or browse — we accept multiple documents so you can dump everything at once.</p>
+      </div>
+      <div class="uploadZone" id="uploadZone">
+        <input type="file" id="fileDropInput" multiple hidden />
+        <p class="uploadHelp">Drop files here or <button type="button" class="btn ghost" id="uploadBrowse">Browse</button></p>
+        <div class="uploadMeta" id="uploadMeta">No files yet</div>
+        <ul class="uploadList" id="uploadList" aria-live="polite"></ul>
+      </div>
+      <div class="uploadActions">
+        <button type="button" class="btn primary" id="uploadButton">Upload</button>
+        <div class="tiny" id="uploadStatus">Log in and add files to enable upload.</div>
+      </div>
+    </section>
+    <div class="sectionRow">
+      <section class="section needsSection">
+        <div class="sectionHead">
+          <h2>Tax prep needs</h2>
+          <p>Share your forms, filing status, or challenges so we can match the right service.</p>
+        </div>
+        <form class="needsForm">
+          <label>
+            <span class="fieldLabel">Filing type</span>
+            <select>
+              <option>Individual (W-2/1099)</option>
+              <option>Self-employed</option>
+              <option>Business (LLC/S Corp)</option>
+              <option>Non-resident / ITIN</option>
+            </select>
+          </label>
+          <div class="needsGrid">
+            <label class="checkboxCard">
+              <input type="checkbox" value="w2" />
+              <span>W-2</span>
+            </label>
+            <label class="checkboxCard">
+              <input type="checkbox" value="1099" />
+              <span>1099 (NEC/K)</span>
+            </label>
+            <label class="checkboxCard">
+              <input type="checkbox" value="investments" />
+              <span>Investments</span>
+            </label>
+            <label class="checkboxCard">
+              <input type="checkbox" value="biz" />
+              <span>Business income</span>
+            </label>
+            <label class="checkboxCard">
+              <input type="checkbox" value="rent" />
+              <span>Rental / real estate</span>
+            </label>
+          </div>
+          <label>
+            <span class="fieldLabel">Describe your situation</span>
+            <textarea placeholder="Extra forms, dependents, education credits, etc."></textarea>
+          </label>
+          <div class="ctaRow">
+            <button type="button" class="btn primary">Continue</button>
+          </div>
+        </form>
+      </section>
+
+      <section id="personalInfoSection" class="section signupSection hidden">
       <div class="sectionHead">
         <h2>Personal info</h2>
       </div>
-      <form class="signupForm">
+      <form class="signupForm" id="loginForm">
         <div class="nameRow">
           <label>
             <input type="text" placeholder="First Name" />
@@ -62,14 +129,19 @@
           <input type="email" placeholder="Email" />
         </label>
         <label>
+          <input type="password" name="password" placeholder="Password" />
+        </label>
+        <label>
           <input type="tel" placeholder="Phone number" />
         </label>
         <div class="signupActions">
-          <a class="btn ghost" href="#">Already have an account?</a>
-          <button type="button" class="btn primary">Create account</button>
+          <button type="submit" class="btn primary" id="primaryAction">Log in</button>
+          <button type="button" class="btn ghost" id="googleLogin">Continue with Google</button>
         </div>
+        <div class="signupStatus" id="signupStatus"></div>
       </form>
     </section>
+    </div>
 
     <section class="section helpSection">
       <div class="sectionHead">
@@ -96,5 +168,224 @@
       </div>
     </div>
   </footer>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD0beRx1j0exYzACXuxHggpAnQInSqQ_1Q",
+      authDomain: "eztax-94f01.firebaseapp.com",
+      databaseURL: "https://eztax-94f01-default-rtdb.firebaseio.com",
+      projectId: "eztax-94f01",
+      storageBucket: "eztax-94f01.firebasestorage.app",
+      messagingSenderId: "353453106544",
+      appId: "1:353453106544:web:ac3735a7ba2fdc6c201bb5",
+      measurementId: "G-4ZDPSH3QM4"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const googleProvider = new GoogleAuthProvider();
+    const firestore = getFirestore(app);
+    const storage = getStorage(app);
+
+    const form = document.querySelector('#loginForm');
+    const statusEl = document.querySelector('#signupStatus');
+    const heroLoginLink = document.querySelector('.heroLoginRow a');
+    const personalInfoSection = document.querySelector('#personalInfoSection');
+    const continueButton = document.querySelector('.needsSection .btn.primary');
+    const needsSection = document.querySelector('.needsSection');
+    const uploadSection = document.querySelector('#uploadSection');
+    const timelineSteps = Array.from(document.querySelectorAll('.timelineStep'));
+    const uploadZone = document.querySelector('#uploadZone');
+    const fileDropInput = document.querySelector('#fileDropInput');
+    const uploadList = document.querySelector('#uploadList');
+    const uploadMeta = document.querySelector('#uploadMeta');
+    const uploadBrowse = document.querySelector('#uploadBrowse');
+    const uploadButton = document.querySelector('#uploadButton');
+    const uploadStatus = document.querySelector('#uploadStatus');
+    const glassBackButton = document.querySelector('.glassBack');
+    let currentTimelineStep = 1;
+    let selectedFiles = [];
+
+    const setUploadStatus = (message) => {
+      if (uploadStatus) uploadStatus.textContent = message;
+    };
+
+    const updateBackVisibility = () => {
+      if (!glassBackButton) return;
+      glassBackButton.classList.toggle('hidden', currentTimelineStep <= 1);
+    };
+
+    const activateTimelineStep = (stepNumber) => {
+      currentTimelineStep = Math.min(Math.max(stepNumber, 1), timelineSteps.length);
+      timelineSteps.forEach((step, index) => {
+        step.classList.toggle('active', index === currentTimelineStep - 1);
+      });
+      updateBackVisibility();
+      needsSection?.classList.toggle('hidden', currentTimelineStep >= 2);
+      uploadSection?.classList.toggle('hidden', currentTimelineStep !== 2);
+    };
+    activateTimelineStep(1);
+
+    const renderFileList = (files) => {
+      if (!uploadList || !uploadMeta) return;
+      uploadList.innerHTML = '';
+      if (!files.length) {
+        uploadMeta.textContent = 'No files yet';
+        return;
+      }
+      uploadMeta.textContent = `${files.length} file${files.length === 1 ? '' : 's'} ready to upload`;
+      files.forEach((file) => {
+        const li = document.createElement('li');
+        const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+        li.textContent = `${file.name} · ${sizeMb} MB`;
+        uploadList.appendChild(li);
+      });
+    };
+
+    const handleFiles = (fileList) => {
+      selectedFiles = Array.from(fileList);
+      renderFileList(selectedFiles);
+      setUploadStatus('Ready to upload');
+    };
+
+    uploadZone?.addEventListener('dragover', (event) => {
+      event.preventDefault();
+      uploadZone.classList.add('dragover');
+    });
+    uploadZone?.addEventListener('dragleave', () => {
+      uploadZone?.classList.remove('dragover');
+    });
+    uploadZone?.addEventListener('drop', (event) => {
+      event.preventDefault();
+      uploadZone?.classList.remove('dragover');
+      if (event.dataTransfer?.files?.length) {
+        handleFiles(event.dataTransfer.files);
+      }
+    });
+    uploadBrowse?.addEventListener('click', () => fileDropInput?.click());
+    fileDropInput?.addEventListener('change', (event) => {
+      if (!event.target?.files?.length) return;
+      handleFiles(event.target.files);
+    });
+
+    const ensureUserFolder = async (user) => {
+      if (!user) return;
+      const userDoc = doc(firestore, 'users', user.uid);
+      const snapshot = await getDoc(userDoc);
+      if (!snapshot.exists()) {
+        await setDoc(userDoc, {
+          email: user.email || null,
+          phone: user.phoneNumber || null,
+          createdAt: serverTimestamp()
+        });
+      }
+    };
+
+    const setLoginLabel = async (user) => {
+      if (!heroLoginLink) return;
+      heroLoginLink.href = 'profile.html';
+      if (!user) {
+        heroLoginLink.textContent = 'Log In';
+        setUploadStatus('Log in and add files to enable upload.');
+        return;
+      }
+      personalInfoSection?.classList.add('hidden');
+      try {
+        await ensureUserFolder(user);
+      } catch (error) {
+        console.error('Failed to ensure user folder', error);
+      }
+      const displayName = user.displayName || user.email?.split('@')[0] || 'You';
+      heroLoginLink.textContent = `Hi, ${displayName}`;
+      setUploadStatus('Drop files and hit Upload when ready.');
+    };
+
+    onAuthStateChanged(auth, (user) => setLoginLabel(user));
+
+    continueButton?.addEventListener('click', (event) => {
+      if (!auth.currentUser) {
+        personalInfoSection?.classList.remove('hidden');
+        statusEl && (statusEl.textContent = 'Log in to keep going.');
+        personalInfoSection?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+      event.preventDefault();
+      activateTimelineStep(2);
+      const targetStep = timelineSteps[1];
+      targetStep?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+
+    glassBackButton?.addEventListener('click', () => {
+      if (currentTimelineStep <= 1) return;
+      activateTimelineStep(currentTimelineStep - 1);
+    });
+
+    const resetStatus = () => {
+      if (statusEl) statusEl.textContent = '';
+    };
+
+    form?.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (!form || !statusEl) return;
+      const email = form.querySelector('input[type="email"]')?.value.trim();
+      const password = form.querySelector('input[name="password"]')?.value;
+      if (!email || !password) {
+        statusEl.textContent = 'Enter both email and password.';
+        return;
+      }
+      statusEl.textContent = 'Signing you in…';
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        statusEl.textContent = 'Logged in — you can upload documents now.';
+      } catch (error) {
+        statusEl.textContent = error.message;
+      }
+    });
+
+    document.querySelector('#googleLogin')?.addEventListener('click', async () => {
+      if (!statusEl) return;
+      statusEl.textContent = 'Redirecting to Google…';
+      try {
+        await signInWithPopup(auth, googleProvider);
+        statusEl.textContent = 'Signed in with Google.';
+      } catch (error) {
+        statusEl.textContent = error.message;
+      }
+    });
+
+    uploadButton?.addEventListener('click', async () => {
+      if (!auth.currentUser) {
+        setUploadStatus('Log in to upload your documents.');
+        return;
+      }
+      if (!selectedFiles.length) {
+        setUploadStatus('Add at least one file before uploading.');
+        return;
+      }
+      setUploadStatus('Uploading files…');
+      const user = auth.currentUser;
+      try {
+        const timestamp = Date.now();
+        const uploads = selectedFiles.map((file, index) => {
+          const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+          const storagePath = `users/${user.uid}/${timestamp}-${index}-${safeName}`;
+          const storageRef = ref(storage, storagePath);
+          return uploadBytes(storageRef, file);
+        });
+        await Promise.all(uploads);
+        setUploadStatus('Files uploaded successfully.');
+        selectedFiles = [];
+        renderFileList(selectedFiles);
+        if (fileDropInput) fileDropInput.value = '';
+      } catch (error) {
+        console.error('Upload failed', error);
+        setUploadStatus(error.message || 'Upload failed. Try again.');
+      }
+    });
+  </script>
 </body>
 </html>
